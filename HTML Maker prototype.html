@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HTML Maker – Editor & Preview</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: #111827;
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      padding: 12px 16px;
+      background: #020617;
+      border-bottom: 1px solid #1f2937;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lang-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .editor, .preview {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .editor {
+      border-right: 1px solid #1f2937;
+      background: #020617;
+    }
+
+    .panel-header {
+      padding: 8px 12px;
+      font-size: 14px;
+      background: #020617;
+      border-bottom: 1px solid #1f2937;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    textarea {
+      flex: 1;
+      width: 100%;
+      border: none;
+      outline: none;
+      resize: none;
+      padding: 10px 12px;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 13px;
+      background: #020617;
+      color: #e5e7eb;
+      box-sizing: border-box;
+    }
+
+    iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: white;
+    }
+
+    button {
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 4px;
+      border: 1px solid #4b5563;
+      background: #111827;
+      color: #e5e7eb;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    button:hover {
+      background: #1f2937;
+      border-color: #6b7280;
+    }
+
+    @media (max-width: 800px) {
+      .container {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+      }
+      .editor {
+        border-right: none;
+        border-bottom: 1px solid #1f2937;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <span id="titleText">HTML Maker – Paste, preview and download</span>
+    <div class="lang-buttons">
+      <button id="toSpanishBtn">Traducir español</button>
+      <button id="toEnglishBtn">Change to English</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <section class="editor">
+      <div class="panel-header">
+        <span id="editorLabel">User HTML</span>
+        <div style="display:flex; gap:8px;">
+          <button id="renderBtn">Render</button>
+          <button id="downloadBtn">Download HTML</button>
+        </div>
+      </div>
+
+      <textarea id="htmlInput" spellcheck="false">
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Example</title>
+</head>
+<body>
+  <h1>Hello, world</h1>
+  <p>This HTML was written by you.</p>
+</body>
+</html>
+      </textarea>
+    </section>
+
+    <section class="preview">
+      <div class="panel-header">
+        <span id="previewLabel">Preview</span>
+      </div>
+      <iframe id="previewFrame"></iframe>
+    </section>
+  </div>
+
+  <script>
+    const textarea = document.getElementById('htmlInput');
+    const iframe = document.getElementById('previewFrame');
+    const renderBtn = document.getElementById('renderBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    const titleText = document.getElementById('titleText');
+    const editorLabel = document.getElementById('editorLabel');
+    const previewLabel = document.getElementById('previewLabel');
+    const toSpanishBtn = document.getElementById('toSpanishBtn');
+    const toEnglishBtn = document.getElementById('toEnglishBtn');
+
+    const texts = {
+      en: {
+        title: "HTML Maker – Paste, preview and download",
+        editor: "User HTML",
+        preview: "Preview",
+        render: "Render",
+        download: "Download HTML"
+      },
+      es: {
+        title: "HTML Maker – Pega, previsualiza y descarga",
+        editor: "HTML de la persona",
+        preview: "Resultado",
+        render: "Renderizar",
+        download: "Descargar HTML"
+      }
+    };
+
+    function setLanguage(lang) {
+      const t = texts[lang];
+      document.documentElement.lang = lang === "en" ? "en" : "es";
+      titleText.textContent = t.title;
+      editorLabel.textContent = t.editor;
+      previewLabel.textContent = t.preview;
+      renderBtn.textContent = t.render;
+      downloadBtn.textContent = t.download;
+    }
+
+    function renderHTML() {
+      iframe.srcdoc = textarea.value;
+    }
+
+    function downloadHTML() {
+      const code = textarea.value;
+      const blob = new Blob([code], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "archivo.html";
+      a.click();
+
+      URL.revokeObjectURL(url);
+    }
+
+    renderBtn.addEventListener('click', renderHTML);
+    downloadBtn.addEventListener('click', downloadHTML);
+
+    toSpanishBtn.addEventListener('click', () => setLanguage("es"));
+    toEnglishBtn.addEventListener('click', () => setLanguage("en"));
+
+    // Default: English
+    setLanguage("en");
+    renderHTML();
+  </script>
+</body>
+</html>
